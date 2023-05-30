@@ -5,16 +5,16 @@ import { InMemoryGymsRepository } from '@/repositories/in-memory/in-memory-gyms-
 import { Decimal } from '@prisma/client/runtime'
 
 let checkInsRepository: InMemoryCheckInsRepository
-let gymRepository: InMemoryGymsRepository
+let gymsRepository: InMemoryGymsRepository
 let sut: CheckInUseCase
 
 describe('Check-in Use Case', () => {
   beforeEach(() => {
     checkInsRepository = new InMemoryCheckInsRepository()
-    gymRepository = new InMemoryGymsRepository()
-    sut = new CheckInUseCase(checkInsRepository, gymRepository)
+    gymsRepository = new InMemoryGymsRepository()
+    sut = new CheckInUseCase(checkInsRepository, gymsRepository)
 
-    gymRepository.items.push({
+    gymsRepository.items.push({
       id: 'gym-01',
       title: 'JavaScript Gym',
       description: '',
@@ -81,5 +81,25 @@ describe('Check-in Use Case', () => {
     })
 
     expect(checkIn.id).toEqual(expect.any(String))
+  })
+
+  it('Should not be able to check in on distance gym', async () => {
+    gymsRepository.items.push({
+      id: 'gym-01',
+      title: 'JavaScript Gym',
+      description: '',
+      latitude: new Decimal(-15.852808),
+      longitude: new Decimal(-48.061936),
+      phone: '',
+    })
+
+    expect(() =>
+      sut.execute({
+        gymId: 'gym-01',
+        userId: 'user-01',
+        userLatitude: -15.840083,
+        userLongitude: -48.023895,
+      }),
+    ).rejects.toBeInstanceOf(Error)
   })
 })
