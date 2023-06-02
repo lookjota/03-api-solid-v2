@@ -4,7 +4,7 @@ import { CheckIn } from '@prisma/client'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { getDistanceBetweenCoordinates } from '@/utils/get-distance-between-coordinates'
 import { MaxDistanceError } from './errors/max-distance-error'
-import { MaxNumberOfCheckInsErorr } from './errors/max-number-of-check-ins-error'
+import { MaxNumberOfCheckInsError } from './errors/max-number-of-check-ins-error'
 interface CheckInUseCaseRequest {
   userId: string
   gymId: string
@@ -54,7 +54,7 @@ export class CheckInUseCase {
     )
 
     if (checkInOnSameDay) {
-      throw new MaxNumberOfCheckInsErorr()
+      throw new MaxNumberOfCheckInsError()
     }
 
     const checkIn = await this.checkInsRepository.create({
